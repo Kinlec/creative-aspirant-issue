@@ -22,5 +22,12 @@ prune:
 	@docker-compose down -v $(filter-out $@,$(MAKECMDGOALS))
 
 sh:
-	@echo $$(docker ps -aqf "name=$(PROJECT_NAME)_app_1")
 	@docker exec -it $$(docker ps -aqf "name=$(PROJECT_NAME)_app_1") /bin/sh
+
+restart:
+	@docker-compose stop
+	docker-compose pull
+	docker-compose up -d --remove-orphans
+
+rebuild:
+	@docker-compose stop docker-compose up -d --build
