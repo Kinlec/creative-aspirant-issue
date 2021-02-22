@@ -1,4 +1,5 @@
 connection:
+  url: '%env(resolve:DATABASE)%'
   driver: 'pdo_mysql'
   charset: 'utf8mb4'
 
