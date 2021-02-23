@@ -9,3 +9,9 @@ movie:
   path: movie/{id}
   controller: App\Controller\MovieController
   action: view
+
+registration:
+  method: 'get'
+  path: registration
+  controller: App\Controller\RegistrationController
+  action: index
