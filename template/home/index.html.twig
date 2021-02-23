@@ -1,6 +1,8 @@
 {% extends 'main.html.twig' %}
 
-{% block title %}{{ trailers | length }} iTunes Movie trailers{% endblock %}
+{% block title %}
+    {{ trailers | length }} iTunes Movie trailers
+{% endblock %}
 
 {% block content %}
     <div class="container">
@@ -8,7 +10,14 @@
         <table class="table table-bordered">
             {% for trailer in trailers %}
                 <tr>
-                    <td>{{ trailer.title }}</td>
+                    <td>
+                        <div class="mb-4">
+                            <a href="movie/{{ trailer.id }}" style="text-decoration: none;">
+                                <img src="{{ trailer.image }}" alt="{{ trailer.title }}">
+                            </a>
+                        </div>
+                        <a href="movie/{{ trailer.id }}">{{ trailer.title }}</a>
+                    </td>
                 </tr>
             {% endfor %}
         </table>

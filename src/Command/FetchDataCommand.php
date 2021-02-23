@@ -14,6 +14,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
 
 class FetchDataCommand extends Command
 {
@@ -23,7 +24,6 @@ class FetchDataCommand extends Command
 
     private ClientInterface $httpClient;
     private LoggerInterface $logger;
-    private string $source;
     private EntityManagerInterface $doctrine;
 
     /**
@@ -82,20 +82,23 @@ class FetchDataCommand extends Command
 
     protected function processXml(string $data): void
     {
-        $xml = (new \SimpleXMLElement($data))->children();
-//        $namespace = $xml->getNamespaces(true)['content'];
-//        dd((string) $xml->channel->item[0]->children($namespace)->encoded);
+        $xmlEncoder = new XmlEncoder();
+        $rssFeedDecoded = $xmlEncoder->decode($data, 'xml');
 
-        if (!property_exists($xml, 'channel')) {
+        if (empty($rssFeedDecoded['channel'])) {
             throw new RuntimeException('Could not find \'channel\' element in feed');
         }
-        foreach ($xml->channel->item as $item) {
-            $trailer = $this->getMovie((string) $item->title)
-                ->setTitle((string) $item->title)
-                ->setDescription((string) $item->description)
-                ->setLink((string) $item->link)
-                ->setPubDate($this->parseDate((string) $item->pubDate))
-            ;
+
+        $lastTenTrailers = array_chunk($rssFeedDecoded['channel']['item'], 10, true)[0];
+        foreach ($lastTenTrailers as $item) {
+            preg_match('/<img[^>]+src="([^">]+)"/', $item['content:encoded'], $matches);
+            $imageUrl = $matches[1] ?? null;
+            $trailer = $this->getMovie($item['title'])
+                ->setTitle($item['title'])
+                ->setDescription($item['description'])
+                ->setLink($item['link'])
+                ->setPubDate($this->parseDate($item['pubDate']))
+                ->setImage($imageUrl);
 
             $this->doctrine->persist($trailer);
         }
@@ -116,7 +119,7 @@ class FetchDataCommand extends Command
             $this->logger->info('Create new Movie', ['title' => $title]);
             $item = new Movie();
         } else {
-            $this->logger->info('Move found', ['title' => $title]);
+            $this->logger->info('Movie found', ['title' => $title]);
         }
 
         if (!($item instanceof Movie)) {
