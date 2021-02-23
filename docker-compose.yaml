@@ -23,3 +23,16 @@ services:
       MYSQL_DATABASE: slim_project
       MYSQL_USER: webmaster
       MYSQL_PASSWORD: webmaster
+
+  nginx:
+    container_name: "nginx"
+    build:
+      context: ./nginx
+    volumes:
+      - .:/var/www/app
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./logs:/var/log
+    depends_on:
+      - app
+    ports:
+      - "80:80"

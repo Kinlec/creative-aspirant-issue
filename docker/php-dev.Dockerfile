@@ -54,3 +54,6 @@ COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 RUN /usr/local/bin/composer self-update
 
 WORKDIR /var/www/app
+
+CMD composer install ;  php-fpm
+EXPOSE 9000
