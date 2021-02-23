@@ -18,7 +18,8 @@ class HomeController
         private RouteCollectorInterface $routeCollector,
         private Environment $twig,
         private EntityManagerInterface $em
-    ) {}
+    ) {
+    }
 
     public function index(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {

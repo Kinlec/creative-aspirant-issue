@@ -6,21 +6,29 @@ use App\Entity\Movie;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Exception\HttpBadRequestException;
 use Slim\Interfaces\RouteCollectorInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Twig\Environment;
 
-class MovieController extends AbstractController
+class MovieController
 {
     public function __construct(
         private RouteCollectorInterface $routeCollector,
         private Environment $twig,
         private EntityManagerInterface $em
-    ) {}
+    ) {
+    }
 
     /**
      * @Route("/movie/{id}")
+     *
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface      $response
+     *
+     * @return ResponseInterface
+     *
+     * @throws HttpBadRequestException
      */
     public function view(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
@@ -32,7 +40,7 @@ class MovieController extends AbstractController
                 'movie' => $movie,
             ]);
         } catch (\Exception $e) {
-            throw $this->createNotFoundException('There are no movies with the following id: ' . $id);
+            throw new HttpBadRequestException($request, $e->getMessage(), $e);
         }
 
         $response->getBody()->write($data);
