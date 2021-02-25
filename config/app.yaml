@@ -1,6 +1,9 @@
 slim:
-  debug: false
+  debug: true
 
 templates:
   dir: template
   cache: var/cache/template
+
+framework:
+  test: true

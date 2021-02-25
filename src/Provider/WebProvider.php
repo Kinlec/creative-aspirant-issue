@@ -26,13 +26,23 @@ class WebProvider implements ServiceProviderInterface
     protected function defineControllerDi(Container $container): void
     {
         $container->set(HomeController::class, static function (ContainerInterface $container) {
-            return new HomeController($container->get(RouteCollectorInterface::class), $container->get(Environment::class), $container->get(EntityManagerInterface::class));
+            return new HomeController($container->get(RouteCollectorInterface::class),
+                $container->get(Environment::class),
+                $container->get(EntityManagerInterface::class)
+            );
         });
         $container->set(MovieController::class, static function (ContainerInterface $container) {
-            return new MovieController($container->get(RouteCollectorInterface::class), $container->get(Environment::class), $container->get(EntityManagerInterface::class));
+            return new MovieController(
+                $container->get(RouteCollectorInterface::class),
+                $container->get(Environment::class),
+                $container->get(EntityManagerInterface::class)
+            );
         });
         $container->set(RegistrationController::class, static function (ContainerInterface $container) {
-            return new RegistrationController($container->get(Environment::class), $container->get(EntityManagerInterface::class));
+            return new RegistrationController(
+                $container->get(Environment::class),
+                $container->get(EntityManagerInterface::class)
+            );
         });
     }
 
